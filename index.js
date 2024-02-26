@@ -1,6 +1,6 @@
 import path from 'path'
-import core from '@actions/core'
-import github from '@actions/github'
+import * as core from '@actions/core'
+import * as github from '@actions/github'
 import write from '@changesets/write'
 import { createLogger } from '@generates/logger'
 import dot from '@ianwalter/dot'
@@ -20,6 +20,7 @@ async function run () {
     summary,
     token = process.env.INPUT_TOKEN
   } = github.context.payload.inputs || {}
+  console.log("🚀 ~ run ~ github.context.payload", github.context.payload)
 
   // Try to extract changeset data from the pull request label or workflow
   // input.
@@ -57,7 +58,7 @@ async function run () {
           const cwd = path.resolve(path.dirname(file.filename))
           const { packageJson, ...pkg } = await readPackageUpAsync({ cwd })
           const hasPackage = releases.some(r => r.name === packageJson.name)
-          if (!hasPackage) releases.push({ name: packageJson.name, type })
+          if (!hasPackage && !packageJson?.private) releases.push({ name: packageJson.name, type })
           logger.debug('File', { file, ...pkg, cwd, hasPackage })
         }
       }
